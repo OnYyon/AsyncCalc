@@ -1,5 +1,4 @@
-# TODO: maybe do unary operation ~
-EXPRESSION_TOKEN = r"""
+EXPRESSION_TEMPLATE = r"""
 \s*
 (
     \d+(?:\.\d+)?
