@@ -6,6 +6,7 @@ class ExpressionError(Exception):
         self.part_of_string = src
 
     def __str__(self) -> str:
+        print(self.part_of_string)
         return f"You have error near: {self.part_of_string}"
 
 

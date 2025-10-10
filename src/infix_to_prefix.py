@@ -5,7 +5,8 @@ from src.errors import ParserError
 class Parser:
     """
     Текущая EBNF грамматика:
-    <expression> ::= <primary> {<primary>}
+    <expression> ::= <term> {("+" | "-" ) <term>}
+    <term> ::= <primary> {("*" | "/") <primary>}
     <primary> ::= NUMBER
     """
     def __init__(self, tokens: list[tuple[str, str, int, int]]):
@@ -17,8 +18,6 @@ class Parser:
         self.parse_expression()
 
     def consume(self, check_type: str):
-        if self.token[0] == "EOF":
-            raise ParserError("end of tokens")
         if self.token[0] != check_type:
             raise ParserError(f"unexpected token: {self.token[1]} expected {check_type} {self.token[2]}:{self.token[3]}")
 
@@ -30,8 +29,19 @@ class Parser:
         return None
 
     def parse_expression(self):
-        while self.token[0] == "NUMBER":
+        self.parse_term()
+
+        while self.token[0] == "OPERATOR":
+            op = self.consume("OPERATOR")
+            self.parse_term()
+            self.rpn.append(op)
+
+    def parse_term(self):
+        self.parse_primary()
+        while self.token[0] == "OPERATOR" and (self.token[1] == "/" or self.token[1] == "*"):
+            op = self.consume("OPERATOR")
             self.parse_primary()
+            self.rpn.append(op)
 
     def parse_primary(self):
         self.rpn.append(self.consume("NUMBER"))
@@ -42,5 +52,5 @@ class Parser:
 
 # TODO: Delete after testing
 if __name__ == "__main__":
-    parser = Parser(tokenize("123424 1324.234"))
+    parser = Parser(tokenize("123424 * 124.1234 + 341 + 4324 * 432"))
     print(parser.get_rpn())
