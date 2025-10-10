@@ -19,6 +19,8 @@ def tokenize(expression: str) -> list[tuple[str, str, int, int]]:
     while pos < len(expression):
         m = pattern.match(expression, pos)
         if not m:
+            if not expression[pos:pos+10].strip():
+                raise ExpressionError("end")
             raise ExpressionError(expression[pos:pos+10])
 
         t = m.group(1)
