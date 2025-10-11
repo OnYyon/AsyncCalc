@@ -2,6 +2,7 @@ class ExpressionError(Exception):
     """
     Ошибки связанные с неправильностью вводимого выражения
     """
+
     def __init__(self, src: str):
         self.part_of_string = src
 
