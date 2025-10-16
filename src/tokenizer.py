@@ -25,7 +25,7 @@ def tokenize(expression: str) -> list[tuple[str, str, int, int]]:
         if not m:
             if not expression[pos:pos + 10].strip():
                 raise ExpressionError("end")
-            raise ExpressionError(expression[pos:pos + 10])
+            raise ExpressionError(expression[pos:pos+5])
 
         t = m.group(1)
         pos = m.end()

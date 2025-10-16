@@ -6,4 +6,5 @@ EXPRESSION_TEMPLATE = r"""
     | //
     | [%()+\-*/]
 )
+\s*
 """
