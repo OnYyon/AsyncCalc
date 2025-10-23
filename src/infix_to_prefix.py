@@ -1,6 +1,3 @@
-from typing import Callable
-
-from src.tokenizer import tokenize
 from src.errors import ParserError
 
 
@@ -15,16 +12,22 @@ class Parser:
     <parenthesized> ::= "(" <expression> ")"
     <unary> ::= ("-" | "+")  <primary>
     """
+    rpn: list[str]
+    index: int
+    tokens: list[tuple[str, str, int, int]]
+    token: tuple[str, str, int, int]
 
-    def __init__(self, tokens: list[tuple[str, str, int, int]]):
-        self.rpn: list[str] = []
-        self.index: int = 0
-        self.tokens: list[tuple[str, str, int, int]] = tokens
-        self.token: tuple[str, str, int, int] = self.tokens[0]
+    def __init__(self):
+        self._clean()
 
-        self._tracer: list[Callable[[], None]] = [self.parse_expression]
-
+    def calculate(self, tokens: list[tuple[str, str, int, int]]) -> list[str]:
+        self._clean()
+        self.tokens = tokens
+        self.token = tokens[0]
         self.parse_expression()
+        if self.token[0] != "EOF":
+            raise ParserError(f"Unexpected token: {self.token[1]} expected EOF")
+        return self.rpn
 
     def consume(self, check_type: str) -> str:
         """
@@ -34,7 +37,7 @@ class Parser:
         """
         if self.token[0] != check_type:
             raise ParserError(
-                f"unexpected token: {self.token[1]} expected {check_type} {self.token[2]}:{self.token[3]}")
+                f"Unexpected token: {self.token[1]} expected {check_type} {self.token[2]}:{self.token[3]}")
 
         t = self.token[:]
         self.index += 1
@@ -47,12 +50,10 @@ class Parser:
         Обрабатываем сложение/вычитание.
         """
         self.parse_term()
-        self._tracer.append(self.parse_term)
 
         while self.token[0] == "OPERATOR" and self.token[1] in ("+", "-"):
             op = self.consume("OPERATOR")
             self.parse_term()
-            self._tracer.append(self.parse_term)
             self.rpn.append(op)
 
     def parse_term(self) -> None:
@@ -61,12 +62,10 @@ class Parser:
         Обрабатываем умножение/деление.
         """
         self.parse_factor()
-        self._tracer.append(self.parse_factor)
 
-        while self.token[0] == "OPERATOR" and self.token[1] in ("/", "*"):
+        while self.token[0] == "OPERATOR" and self.token[1] in ("/", "*", "//", "%"):
             op = self.consume("OPERATOR")
             self.parse_factor()
-            self._tracer.append(self.parse_factor)
             self.rpn.append(op)
 
     def parse_factor(self) -> None:
@@ -75,12 +74,10 @@ class Parser:
         Обрабатываем возведение в степень
         """
         self.parse_primary()
-        self._tracer.append(self.parse_primary)
 
         while self.token[0] == "OPERATOR" and self.token[1] == "**":
             op = self.consume("OPERATOR")
             self.parse_factor()
-            self._tracer.append(self.parse_factor)
             self.rpn.append(op)
 
     def parse_primary(self) -> None:
@@ -89,11 +86,9 @@ class Parser:
         """
         if self.token[0] == "LEFT_PARENTHESIS":
             self.parse_parenthesized_expression()
-            self._tracer.append(self.parse_parenthesized_expression)
             return
         if self.token[0] == "OPERATOR" and self.token[1] == "-" or self.token[1] == "+":
             self.parse_unary_expression()
-            self._tracer.append(self.parse_unary_expression)
             return
 
         self.rpn.append(self.consume("NUMBER"))
@@ -105,7 +100,6 @@ class Parser:
         """
         self.consume("LEFT_PARENTHESIS")
         self.parse_expression()
-        self._tracer.append(self.parse_expression)
         self.consume("RIGHT_PARENTHESIS")
 
     def parse_unary_expression(self) -> None:
@@ -120,39 +114,10 @@ class Parser:
         if op == "-":
             self.rpn.append("~")
 
-    def get_rpn(self) -> list[str]:
-        return self.rpn
-
-    def _get_tracer(self) -> list[Callable[[], None]]:
-        return self._tracer
-
-
-# TODO: Delete after testing
-if __name__ == "__main__":
-    import operator
-    from pprint import pprint
-
-    tokens = tokenize("2**3**2")
-    parser = Parser(tokens)
-    rpn = parser.get_rpn()
-    pprint(parser._get_tracer())
-    print(tokens, rpn)
-    stack: list[float]= []
-    d: dict[str, Callable[..., float]] = {
-        "+": operator.add,
-        "-": operator.sub,
-        "*": operator.mul,
-        "/": operator.truediv,
-        "**": operator.pow,
-        "~": operator.neg,
-    }
-    for token in rpn:
-        if token[0].isdigit():
-            stack.append(float(token))
-        elif token == "~":
-            op = stack.pop()
-            stack.append(d[token](op))
-        else:
-            op2, op1 = stack.pop(), stack.pop()
-            stack.append(d[token](op1, op2))
-    print(stack)
+    def _clean(self):
+        """
+        Сбрасывет занчения для получения новго
+        """
+        self.rpn = []
+        self.index = 0
+        self.tokens = []
