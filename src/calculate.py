@@ -3,8 +3,8 @@ from src.errors import ParserError
 
 def operators(operation: str, op1: float, op2: float | None) -> float:
     """
-    Для получения результата операций
-    При op2 is None счиатаем опрецию унарную
+    Для получения результата операций.
+    При op2 is None счиатаем опрецию унарную.
     :param operation: операция
     :param op1: опреранд 1
     :param op2: опреранд 2
@@ -24,6 +24,8 @@ def operators(operation: str, op1: float, op2: float | None) -> float:
                 raise ParserError("Are you sure? Division by zero")
             return op2 / op1
         case "%":
+            if op1 == 0:
+                raise ParserError("Are you sure? Division by zero")
             return op2 % op1
         case "//":
             return op2 // op1
