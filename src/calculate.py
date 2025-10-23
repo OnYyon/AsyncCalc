@@ -50,5 +50,4 @@ def evaluate_rpn(rpn: list[str]) -> float:
             stack.append(operators(token ,stack.pop(), stack.pop()))
     if len(stack) > 1:
         raise ParserError(f"Unprocessable operator: {stack}")
-    print(stack)
     return stack[0]

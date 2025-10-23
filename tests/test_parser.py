@@ -1,5 +1,5 @@
 import unittest
-from src.infix_to_prefix import Parser
+from src.infix_to_postfix import Parser
 from src.errors import ParserError
 
 

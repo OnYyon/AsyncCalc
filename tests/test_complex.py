@@ -2,7 +2,7 @@ import unittest
 
 from src.tokenizer import tokenize
 from src.calculate import evaluate_rpn
-from src.infix_to_prefix import  Parser
+from src.infix_to_postfix import  Parser
 
 
 
