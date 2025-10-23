@@ -1,20 +1,22 @@
-from src.power import power_function
-from src.constants import SAMPLE_CONSTANT
+from src.tokenizer import tokenize
+from src.calculate import evaluate_rpn
+from src.infix_to_postfix import Parser
+from src.errors import ExpressionError, ParserError
 
 
-def main() -> None:
-    """
-    Обязательнная составляющая программ, которые сдаются. Является точкой входа в приложение
-    :return: Данная функция ничего не возвращает
-    """
+def main():
+    parser = Parser()
+    while (exp := input("Введите свое выражение:")) and exp not in ["end", "q"]:
+        try:
+            answer = evaluate_rpn(parser.calculate(tokenize(exp)))
+        except (ExpressionError, ParserError) as e:
+            print(e)
+            continue
+        except Exception as e:
+            print(e)
+            break
+        print(f"Ответ: {answer}")
 
-    target, degree = map(int, input("Введите два числа разделенные пробелом: ").split(" "))
-
-    result = power_function(target=target, power=degree)
-
-    print(result)
-
-    print(SAMPLE_CONSTANT)
 
 if __name__ == "__main__":
     main()

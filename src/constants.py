@@ -1,1 +1,10 @@
-SAMPLE_CONSTANT: int = 10
+EXPRESSION_TEMPLATE = r"""
+\s*
+(
+    \d+(?:\.\d+)?
+    | \*\*
+    | //
+    | [%()+\-*/]
+)
+\s*
+"""
