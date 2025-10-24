@@ -1,4 +1,4 @@
-from src.errors import ParserError
+from src.calculator.errors import ParserError
 
 
 class Parser:

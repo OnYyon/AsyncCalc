@@ -1,6 +1,6 @@
 import unittest
-from src.infix_to_postfix import Parser
-from src.errors import ParserError
+from src.calculator.infix_to_postfix import Parser
+from src.calculator.errors import ParserError
 
 
 class TestParser(unittest.TestCase):

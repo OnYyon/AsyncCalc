@@ -1,4 +1,4 @@
-from src.errors import ParserError
+from src.calculator.errors import ParserError
 
 
 def operators(operation: str, op1: float, op2: float | None) -> float:

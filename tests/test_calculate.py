@@ -1,7 +1,7 @@
 import unittest
 
-from src.errors import ParserError
-from src.calculate import evaluate_rpn
+from src.calculator.errors import ParserError
+from src.calculator.calculate import evaluate_rpn
 
 
 class TestParser(unittest.TestCase):

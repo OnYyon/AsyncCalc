@@ -1,8 +1,8 @@
 import unittest
 
-from src.tokenizer import tokenize
-from src.calculate import evaluate_rpn
-from src.infix_to_postfix import  Parser
+from src.calculator.tokenizer import tokenize
+from src.calculator.calculate import evaluate_rpn
+from src.calculator.infix_to_postfix import  Parser
 
 
 

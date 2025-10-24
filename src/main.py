@@ -1,22 +1,14 @@
-from src.tokenizer import tokenize
-from src.calculate import evaluate_rpn
-from src.infix_to_postfix import Parser
-from src.errors import ExpressionError, ParserError
+from src.manager import Manager
+
 
 
 def main():
-    parser = Parser()
+    mgr = Manager()
     while (exp := input("Введите свое выражение:")) and exp not in ["end", "q"]:
-        try:
-            answer = evaluate_rpn(parser.calculate(tokenize(exp)))
-        except (ExpressionError, ParserError) as e:
-            print(e)
-            continue
-        except Exception as e:
-            print(e)
-            break
-        print(f"Ответ: {answer}")
-
+        if exp == "getall":
+            mgr.get_all_tasks()
+        mgr.add_task(exp)
+    mgr.shutdown()
 
 if __name__ == "__main__":
     main()

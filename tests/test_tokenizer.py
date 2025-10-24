@@ -1,7 +1,7 @@
 import unittest
 
-from src.errors import ExpressionError, EmptyExpressionError
-from src.tokenizer import tokenize
+from src.calculator.errors import ExpressionError, EmptyExpressionError
+from src.calculator.tokenizer import tokenize
 
 
 class TestTokenizer(unittest.TestCase):
