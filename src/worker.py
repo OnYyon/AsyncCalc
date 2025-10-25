@@ -14,6 +14,6 @@ def worker(task_queue: multiprocessing.Queue, result_queue: multiprocessing.Queu
         task_id, expr = task
         try:
             result = evaluate_rpn(parser.calculate(tokenize(expr)))
-            result_queue.put((task_id, result, None))
+            result_queue.put((task_id, expr, result, None))
         except Exception as e:
-            result_queue.put((task_id, None, str(e)))
+            result_queue.put((task_id, expr, None, str(e)))
