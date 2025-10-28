@@ -3,9 +3,10 @@ import multiprocessing
 from src.calculator.tokenizer import tokenize
 from src.calculator.calculate import evaluate_rpn
 from src.calculator.infix_to_postfix import Parser
+from src.calculator.errors import ParserError, ExpressionError, EmptyExpressionError
 
 
-def worker(task_queue: multiprocessing.Queue, result_queue: multiprocessing.Queue):
+def worker(name: str, task_queue: multiprocessing.Queue, result_queue: multiprocessing.Queue):
     parser = Parser()
     while True:
         task = task_queue.get()
@@ -14,6 +15,8 @@ def worker(task_queue: multiprocessing.Queue, result_queue: multiprocessing.Queu
         task_id, expr = task
         try:
             result = evaluate_rpn(parser.calculate(tokenize(expr)))
-            result_queue.put((task_id, expr, result, None))
+            result_queue.put((task_id, expr, result, False, ""))
+        except (ParserError, ExpressionError, EmptyExpressionError) as e:
+            result_queue.put((task_id, expr, -1, True, e))
         except Exception as e:
-            result_queue.put((task_id, expr, None, str(e)))
+            raise e
