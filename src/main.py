@@ -1,12 +1,15 @@
 from src.manager import Manager
+from pprint import pprint
 
 
 
 def main():
     mgr = Manager()
-    while (exp := input("Введите свое выражение:")) and exp not in ["end", "q"]:
+    while (exp := input("Введите свое выражение:")):
+        if exp in ["end", "q"]:
+            break
         if exp == "getall":
-            mgr.get_all_tasks()
+            pprint(mgr.get_all_tasks())
         else:
             mgr.add_task(exp)
     mgr.shutdown()

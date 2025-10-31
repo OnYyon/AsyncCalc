@@ -21,3 +21,6 @@ class TestComplex(unittest.TestCase):
 
     def test_hard(self):
         self.assertEqual(self._calc("((7+1)/(2+2)*4)/8*(32-((4+12)*2))-1+((7+1)/(2+2)*4)/8*(32-((4+12)*2))-1"), -2)
+
+    def test_template(self):
+        self.assertEqual(self._calc("3+5*(4-3**2)+-3"), -25)

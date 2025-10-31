@@ -18,7 +18,8 @@ class Manager:
 
         self._workers = []
         for i in range(3):
-            p = multiprocessing.Process(target=worker, args=(f"{i}", self._task_queue, self._result_queue))
+            p = multiprocessing.Process(target=worker, args=(f"{i}", self._task_queue, self._result_queue),
+                                        daemon=True)
             p.start()
             self._workers.append(p)
 
@@ -33,9 +34,15 @@ class Manager:
             raise KeyError
         return self.tasks[uid]
 
-    def get_all_tasks(self) -> Iterator[tuple[str, tuple[str, str, float, bool, str]]]:
+    def get_all_tasks(self) -> Iterator[dict[str, str | float | bool]]:
         for k, v in self.tasks.items():
-            yield k, v
+            yield {
+                "task_id": k,
+                "expr": v[0],
+                "value": v[1],
+                "error": v[2],
+                "text_error": v[3],
+            }
 
     def update_task(self, uid: str, value: tuple[str, str, float, bool, str]):
         if not self.tasks.get(uid):
@@ -56,10 +63,25 @@ class Manager:
                 break
 
     def shutdown(self):
+        print("Shutting down task manager...")
+
+        # Отправляем sentinel'ы
         for _ in range(len(self._workers)):
-            self._task_queue.put(None)
-        for p in self._workers:
-            p.join(timeout=2)
+            try:
+                self._task_queue.put_nowait(None)
+            except:
+                pass
+
+        # Ждем завершения
+        for i, p in enumerate(self._workers):
+            print(f"Waiting for worker {i}...")
+            p.join(timeout=3)
             if p.is_alive():
-                p.kill()
-        self._listener_thread.join()
+                print(f"Terminating worker {i}...")
+                p.terminate()
+                p.join(timeout=1)
+                if p.is_alive():
+                    print(f"Killing worker {i}...")
+                    p.kill()
+
+        print("All workers stopped")

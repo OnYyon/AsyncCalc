@@ -15,4 +15,4 @@ class Expression(BaseModel):
     text_error: str
 
 class ListExpression(BaseModel):
-    expressions: List[Expression]
+    expressions: dict[str, tuple[str, str, float, bool, str]]

@@ -13,6 +13,7 @@ def worker(name: str, task_queue: multiprocessing.Queue, result_queue: multiproc
         if task is None:
             break
         task_id, expr = task
+        print(f"Воркер: {name} взял задачу {task_id}")
         try:
             result = evaluate_rpn(parser.calculate(tokenize(expr)))
             result_queue.put((task_id, expr, result, False, ""))
